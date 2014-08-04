@@ -192,69 +192,83 @@ a.negative:active, button.negative:active {
   margin: auto;
 }
 
+/* line 11, ../sass/main.scss */
+.ships {
+  float: left;
+}
+
 /**
  * Ship board view stylesheat
  * 
  */
-/* line 26, ../sass/main.scss */
-.board.ships, .board.fires {
-  width: 440px;
-  height: 440px;
+/* line 30, ../sass/main.scss */
+.board.player, .board.enemy {
+  width: 330px;
+  height: 330px;
   clear: both;
   background-color: #EEE9E9;
 }
-/* line 34, ../sass/main.scss */
-.board.ships a.button, .board.fires a.button {
-  width: 38px;
-  height: 38px;
+/* line 41, ../sass/main.scss */
+.board.player a.button, .board.enemy a.button {
+  width: 28px;
+  height: 28px;
   float: left;
   margin: 0px;
   padding: 0px;
   background-color: white;
-  background-size: contain;
+  background-size: 30px 30px;
 }
-/* line 43, ../sass/main.scss */
-.board.ships a.button.miss, .board.fires a.button.miss {
-  background-image: url("../img/fire-bomb.svg");
-}
-/* line 47, ../sass/main.scss */
-.board.ships a.button.fire, .board.fires a.button.fire {
-  background-image: url("../img/flame.svg");
-}
-/* line 51, ../sass/main.scss */
-.board.ships a.button.ship, .board.fires a.button.ship {
-  background-image: url("../img/ship.svg");
-  background-color: red;
+/* line 50, ../sass/main.scss */
+.board.player a.button:hover, .board.enemy a.button:hover {
+  background-image: url("../img/PPCA_ship.svg");
+  opacity: 0.5;
 }
 /* line 55, ../sass/main.scss */
-.board.ships a.button.ship.validated, .board.fires a.button.ship.validated {
-  background-color: green;
+.board.player a.button.miss, .board.enemy a.button.miss {
+  background-image: url("../img/water-splash.svg");
+  background-color: blue;
 }
-/* line 60, ../sass/main.scss */
-.board.ships a.button:hover, .board.fires a.button:hover {
-  background-image: url("../img/ship.svg");
+/* line 62, ../sass/main.scss */
+.board.player a.button.fire, .board.enemy a.button.fire {
+  background-image: url("../img/flame.svg");
 }
-/* line 65, ../sass/main.scss */
-.board.ships a.button.caption, .board.fires a.button.caption {
+/* line 69, ../sass/main.scss */
+.board.player a.button.ship, .board.enemy a.button.ship {
+  background-image: url("../img/PPCA_ship.svg");
+  background-color: red;
+}
+/* line 73, ../sass/main.scss */
+.board.player a.button.ship.validated, .board.enemy a.button.ship.validated {
+  background-color: #00CA00;
+}
+/* line 81, ../sass/main.scss */
+.board.player a.button.caption, .board.enemy a.button.caption {
   background-color: #CECECE;
   text-align: center;
-  font-size: 30px;
+  font-size: 20px;
+  line-height: 30px;
 }
-/* line 66, ../sass/main.scss */
-.board.ships a.button.caption:hover, .board.fires a.button.caption:hover {
+/* line 82, ../sass/main.scss */
+.board.player a.button.caption:hover, .board.enemy a.button.caption:hover {
   background-image: none;
 }
-/* line 77, ../sass/main.scss */
-.board.fires a.button:hover {
+/* line 93, ../sass/main.scss */
+.board.player.ready a.button:hover, .board.enemy.ready a.button:hover {
+  background-image: none;
+}
+/* line 98, ../sass/main.scss */
+.board.enemy a.button:hover {
   background-image: url("../img/cannon-shot.svg");
+  opacity: 0.8;
 }
 
 /**
  * Ship board buttons widget stylesheat
  * 
  */
-/* line 88, ../sass/main.scss */
+/* line 111, ../sass/main.scss */
 .ships.buttons {
+  width: 330px;
   height: 50px;
 }
 
@@ -262,17 +276,45 @@ a.negative:active, button.negative:active {
  * Ship board errors widget stylesheat
  * 
  */
-/* line 98, ../sass/main.scss */
+/* line 122, ../sass/main.scss */
 .ships.errors {
-  width: 440px;
+  width: 330px;
 }
-/* line 101, ../sass/main.scss */
+/* line 125, ../sass/main.scss */
 .ships.errors .error {
   border: 1px solid #FF1E03;
   padding: 10px;
   color: #FF1E03;
 }
-/* line 102, ../sass/main.scss */
+/* line 126, ../sass/main.scss */
 .ships.errors .error:before {
   content: 'Error: ';
+}
+
+/**
+ * Hide/show DOM elements
+ *
+ */
+/* line 142, ../sass/main.scss */
+*.hide {
+  display: none;
+  visibility: hidden;
+}
+
+/* line 147, ../sass/main.scss */
+*.show {
+  display: block;
+  visibility: visible;
+}
+
+/**
+ * Battle Scene
+ *
+ */
+/* line 158, ../sass/main.scss */
+.player,
+.enemy {
+  width: 330px;
+  float: left;
+  padding: 2px;
 }

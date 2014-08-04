@@ -1,20 +1,33 @@
 Game = function (wrapperQuery) {
-    var root = document.querySelector(wrapperQuery);
+	if (arguments.callee._singletoneInstance)
+		return arguments.callee._singletoneInstance;
+		
+	arguments.callee._singletoneInstance = this;
+
+	//this._gameMode = undefined;
+
+    var self = this,
+    	root = document.querySelector(wrapperQuery),
+    	changeScene = function (scene) {
+			root.innerHTML = '';
+			root.appendChild(scene.getRoot());
+		},
+		sceneChandedHandler = function (scene) {
+			//console.log('Scene changed to '+scene, 'Game mode ', self.gameMode.getActivePlayerID());
+			if (scene == 'PlaceShipsScene') changeScene(new Game.PlaceShipsScene(self.gameMode.getActivePlayerID()));
+			else if (scene == 'BattleScene') changeScene(new Game.BattleScene());
+			else if (scene == 'StartScene') changeScene(new Game.StartScene());
+		};
     
-    this.init = function () {
-    	var // player 1
-    		shipModel1 = new Game.ShipBoardModel(1),
-    		shipController1 = new Game.PersonShipController(),
-    		shipView1 = new Game.ShipsBoardView(shipModel1, shipController1),
-    		shipButtons = new Game.ShipBoardButtonsWidget(shipModel1);
-    		shipErrors = new Game.ShipBoardErrorsWidget(shipModel1);
-    		
-    	root.appendChild(shipView1.getRoot());
-    	root.appendChild(shipButtons.getRoot());
-    	root.appendChild(shipErrors.getRoot());
+    this.start = function () {
+    	changeScene(new Game.StartScene());
     }
     
-    return this;
+    this.setGameMode = function (mode) {
+    	self.gameMode = mode;
+    	self.gameMode.addObserver('sceneChanded', sceneChandedHandler);
+    	sceneChandedHandler(self.gameMode.getActiveScene());
+    }
 };
 
 Game.EventManager = function (events) {

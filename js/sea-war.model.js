@@ -1,30 +1,61 @@
-Game.StateModel = function (id1, id2) {
+/**
+ * Person with person game mode model
+ *
+ */
+
+Game.PVPLocalModeModel = function (id1, id2) {
 	var events = [
-			'activePlayerChanged'
+			'activePlayerChanged',
+			'sceneChanded'
 		],
 		eventManager = new Game.EventManager(events)
+		activeSceneIndex = 0,
+		sceneOrder = [
+			'PlaceShipsScene', 
+			'BattleScene',
+			'StartScene'
+		],
 		playersID = [
 			id1 || 0, 
 			id2 || 1
 		],
 		activePlayerIndex = 0,
-		getPlayersID = function () {
-			return playerID;
+		toggleActivePlayer = function () {
+			activePlayerIndex = (activePlayerIndex + 1) % 2;
+			eventManager.notifyObservers('activePlayerChanged');
 		},
-		getActivePlayerIndex = function () {
-			return activePlayerIndex;
+		boards = [],
+		getBoard = function (id) {
+			if (id == id1) return boards[0];
+			if (id == id2) return boards[1];
+			throw new Error('unknown id ' + id);
 		},
-		setActivePlayerIndex = function (index) {
-			activePlayerIndex = index;
-			eventManager.notifyObservers('activePlayerChanged', index);
+		setBoard = function (id, value) {
+			if (id == id1) 
+			{
+				boards[0] = value;
+				activePlayerIndex = 1;
+				eventManager.notifyObservers('sceneChanded', sceneOrder[activeSceneIndex]);
+			}
+			else if (id == id2)
+			{
+				boards[1] = value;
+				activePlayerIndex = 0;
+				activeSceneIndex++;
+				eventManager.notifyObservers('sceneChanded', sceneOrder[activeSceneIndex]);
+			}
+			//else throw new Error('unknown id ' + id);
 		};
 		
 	return {
 		addObserver: eventManager.addObserver,
 		removeObserver: eventManager.removeObserver,
-		getPlayersID: getPlayersID,
-		getActivePlayerIndex: getActivePlayerIndex,
-		setActivePlayerIndex: setActivePlayerIndex
+		getActiveScene: function () { return sceneOrder[activeSceneIndex]; },
+		getPlayersID: function () { return playersID; },
+		getActivePlayerID: function () { return playersID[activePlayerIndex]; },
+		getBoard: getBoard,
+		setBoard: setBoard,
+		toggleActivePlayer: toggleActivePlayer
 	}
 };
 
@@ -106,27 +137,8 @@ Game.Ship = function (number, size, hasShip, hasValidShip) {
  * Ship board model
  */
  
-Game.ShipBoardModel = function (playerID) {
-	var events = [
-			'updated'
-		],
-		eventManager = new Game.EventManager(events),
-		// '.' means empty
-		// 's' means invalidated deck site
-		// 'S' means validated deck site
-			/*board = [
-				'sss.s.ssss'.split(''),
-				'..........'.split(''),
-				'ss.s.s.sss'.split(''),
-				'..........'.split(''),
-				'ss.ss.s...'.split(''),
-				'..........'.split(''),
-				'..........'.split(''),
-				'..........'.split(''),
-				'..........'.split(''),
-				'..........'.split('')
-			],*/
-		board = [
+Game.BoardModel = function () {
+	var board = [
 			'..........'.split(''),
 			'..........'.split(''),
 			'..........'.split(''),
@@ -138,198 +150,197 @@ Game.ShipBoardModel = function (playerID) {
 			'..........'.split(''),
 			'..........'.split('')
 		],
-		getPlayerID = function () {
-			return playerID;
-		},
+		cell = {
+			empty: '.',
+			invalidShip: 's',
+			validShip: 'S',
+			waterSplash: '-',
+			fire: '*'
+		};
+		
+	
+		
+	return {
+		board: board,
+		cell: cell
+	};
+};
+
+/**
+ * Player board model
+ */
+
+Game.PlayerBoardModel = function (playerID) {
+	var board = new Game.BoardModel(),
+		ready = false;
+	
+	board.hasInvalidShips = function () {
+		for (var i = 0, n = 10; i < n; ++i)
+			if (this.board[i].indexOf(board.cell.invalidShip) != -1)
+				return true;
+		return false;
+	};
+	
+	var events = [
+			'updated'
+		],
+		eventManager = new Game.EventManager(events),
 		hasShip = function (i, j) {
 			if (i < 0 || i > 9 || j < 0 || j > 9)
 			{
 				return false;
 			}
-			return board[i][j] == 's' || board[i][j] == 'S';
+			return (board.board[i][j] == board.cell.validShip) 
+				|| (board.board[i][j] == board.cell.invalidShip);
 		},
 		hasValidShip = function (i, j) {
 			if (i < 0 || i > 9 || j < 0 || j > 9)
 			{
 				return false;
 			}
-			return board[i][j] == 'S';
+			return board.board[i][j] == board.cell.validShip;
 		},
+		invalidateAll = function () {
+			for (var i = 0, n = 10; i < n; ++i)
+				for (var j = 0; j < n; ++j) 
+					if (hasValidShip(i, j))
+						board.board[i][j] = board.cell.invalidShip;
+		},
+		errors = [new Error('Board is empty.')],
 		shipPatterns = [
 			new Game.Ship(1, 4, hasShip, hasValidShip), 
 			new Game.Ship(2, 3, hasShip, hasValidShip), 
 			new Game.Ship(3, 2, hasShip, hasValidShip), 
 			new Game.Ship(4, 1, hasShip, hasValidShip)
 		],
-		invalidateAll = function () {
-			for (var i = 0, n = 10; i < n; ++i)
-				for (var j = 0; j < n; ++j) 
-					if (hasValidShip(i, j))
-						board[i][j] = 's';
-		},
-		errors = [new Error('Board is empty.')],
-		getErrors = function () {
-			return errors;
-		},
-		hasErrors = function () {
-			return errors.length != 0;
-		},
 		validate = function () {
 			invalidateAll();
 			
 			var matchedShips = new Array(shipPatterns.length);
 			
-			console.log(matchedShips);
+			//console.log('matchedShips', matchedShips);
 			
 			for (var i = 0, n = 10; i < n; ++i)
 				for (var j = 0; j < n; ++j)
 					for (var k = 0; k < shipPatterns.length; ++k) 
 					{
+						//if (i == 0 && j == 0) 
+							//console.log('validate', i, j, k, shipPatterns, matchedShips, board);
+					
 						var horizontal = shipPatterns[k].hasHorizontalMatch(i, j),
 							vertical   = shipPatterns[k].hasVerticalMatch(i, j);
 							
-						matchedShips[k] = (horizontal || vertical) + matchedShips[k] || 0;
+						matchedShips[k] = (horizontal || vertical) + (matchedShips[k] || 0);
 							
 						if (horizontal) 
 						{
 							for (var h = j; h < j + shipPatterns[k].getSize(); ++h)
-								board[i][h] = 'S';
+								board.board[i][h] = board.cell.validShip;
 						} 
 						else if (vertical) 
 						{
 							for (var v = i; v < i + shipPatterns[k].getSize(); ++v)
-								board[v][j] = 'S';
+								board.board[v][j] = board.cell.validShip;
 						}
 					}
 			
 			errors = [];
 			
-			console.log(matchedShips);
+			//console.log(matchedShips);
 			
 			for (var i = 0; i < matchedShips.length; ++i)
 				if (matchedShips[i] != shipPatterns[i].getNumber())
-					errors.push(new Error('Incorrect number of ships size of: ' +
-						shipPatterns[i].getSize()));
+					errors.push(new Error('Incorrect number of ships size of: '
+						+ shipPatterns[i].getSize()
+						+ '. Must be: ' + shipPatterns[i].getNumber() + ', there are: '
+						+ matchedShips[i]));
 						
+			if (board.hasInvalidShips())
+				errors.push(new Error('Has invalid ships'));
+			
 			return errors;
 		},
 		setShip = function (i, j, value) {
-			board[i][j] = value ? 's' : '.';
+			board.board[i][j] = value;
 			validate();
+			eventManager.notifyObservers('updated');
+		},
+		setReady = function (value) {
+			ready = value;
 			eventManager.notifyObservers('updated');
 		}
 	
 	return {
 		addObserver: eventManager.addObserver,
 		removeObserver: eventManager.removeObserver,
-		getPlayerID: getPlayerID,
+		getPlayerID: function () { return playerID; },
+		getErrors: function () { return errors; },
+		hasErrors: function () { return errors.length != 0; },
 		hasShip: hasShip,
 		hasValidShip: hasValidShip,
-		getErrors: getErrors,
-		hasErrors: hasErrors,
-		validate: validate,
-		setShip: setShip
+		setShip: setShip,
+		getCell: function () { return board.cell; },
+		getBoard: function () { return board.board; },
+		getReady: function () { return ready; },
+		setReady: setReady
 	};
-};
+}
 
 /**
- * Fires board model
+ * Enemy board model
  */
 
-Game.FiresBoardModel = function () {
+Game.EnemyBoardModel = function (playerID) {
+	var firesBoard = new Game.BoardModel(),
+		shipsBoard = new Game.PlayerBoardModel(playerID),
+		ready = false;
+		
+	shipsBoard.board = 
+	[
+				'SSS.S.SSSS'.split(''),
+				'..........'.split(''),
+				'SS.S.S.SSS'.split(''),
+				'..........'.split(''),
+				'SS.SS.S...'.split(''),
+				'..........'.split(''),
+				'..........'.split(''),
+				'..........'.split(''),
+				'..........'.split(''),
+				'..........'.split('')
+	];
+	
 	var events = [
-			'fired'
+			'updated'
 		],
 		eventManager = new Game.EventManager(events),
-		// '.' means empty
-		// 'f' means ship in fire
-		// 'm' means miss
-		fires = [
-			'..........'.split(''),
-			'..........'.split(''),
-			'..........'.split(''),
-			'..........'.split(''),
-			'..........'.split(''),
-			'..........'.split(''),
-			'..........'.split(''),
-			'..........'.split(''),
-			'..........'.split(''),
-			'..........'.split('')
-		],
-		getFire = function (i, j) {
-			return fires[i][j];
-		},
-		setFire = function (i, j, value) {
-			fires[i][j] = value;
-			eventManager.notifyObservers('fired', {i: i, j: j, value: value});
-		};
-};
-
-
-Game.ModelClassic = function () {
-	var events = 
-		[
-			'myBoardChanged',
-			'enemyBoardChanged',
-			'activePlayerChanged'
-		],
-		eventManager = new Game.EventManager(events);
-
-	var board = {
-			playersID: [0, 1],
-			activePlayer: 0, // 0 - I, 1 - enemy
-			my: [
-				'..........'.split(''),
-				'..........'.split(''),
-				'..........'.split(''),
-				'..........'.split(''),
-				'..........'.split(''),
-				'..........'.split(''),
-				'..........'.split(''),
-				'..........'.split(''),
-				'..........'.split(''),
-				'..........'.split('')
-			],
-			enemy: [
-				'sss.......'.split(''),
-				'..........'.split(''),
-				'..........'.split(''),
-				'..........'.split(''),
-				'..........'.split(''),
-				'..........'.split(''),
-				'..........'.split(''),
-				'..........'.split(''),
-				'..........'.split(''),
-				'..........'.split('')
-			],
-			setEnemy: function (i, j, value) {
-				var enemy = activePlayer ? board.enemy : board.my;
-				enemy[i][j] = value;
-				eventManager.notifyObservers('enemyBoardChanged', enemy);
-				changeActivePlayer();
-			},
-			changeActivePlayer: function () {
-				board.activePlayer = 1 ^ board.activePlayer;
-				eventManager.notifyObservers('activePlayerChanged');
-			},
-			init: function () {
-				eventManager.notifyObservers('activePlayerChanged');
-				eventManager.notifyObservers('enemyBoardChanged', board.enemy);
-				eventManager.notifyObservers('myBoardChanged', board.enemy);
+		fire = function (i, j) {
+			
+			if (shipsBoard.board[i][j] == shipsBoard.getCell().validShip) 
+			{
+				firesBoard.board[i][j] = firesBoard.cell.fire;
+			} 
+			else 
+			{
+				firesBoard.board[i][j] = firesBoard.cell.waterSplash;
 			}
+			eventManager.notifyObservers('updated');
+		},
+		setReady = function (value) {
+			ready = value;
+			eventManager.notifyObservers('updated');
 		};
-		
+	
 	return {
 		addObserver: eventManager.addObserver,
 		removeObserver: eventManager.removeObserver,
-		init: board.init,
-		getBoardMy: function () {
-			return board.my;
-		},
-		getBoardEnemy: function () {
-			return board.enemy;
-		},
-		setEnemy: board.setEnemy
-	}
-};
+		getPlayerID: function () { return playerID; },
+		getCell: function () { return firesBoard.cell; },
+		getBoard: function () { return firesBoard.board; },
+		setReady: function (value) { ready = value; },
+		getReady: function () { return ready; },
+		fire: fire,
+		getReady: function () { return ready; },
+		setReady: setReady
+	};
+}
 

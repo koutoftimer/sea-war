@@ -8,28 +8,35 @@ $page_width: 800px;
     margin: auto;
 }
 
+.ships {
+	float: left;
+}
+
 /**
  * Ship board view stylesheat
  * 
  */
 
-$board_cell_width: 40px;
-$board_cell_height: 40px;
+$board_cell_width: 30px;
+$board_cell_height: $board_cell_width;
 
 $board_width: $board_cell_width * 11;// + 10;
 $board_height: $board_cell_height * 11;// + 10;
 
 .board 
 {
-	&.ships, 
-	&.fires
+	&.player,
+	&.enemy
 	{
 		width: $board_width;
 		height: $board_height;
 		clear: both;
 		background-color: #EEE9E9;
-		//padding: 1px 0px 0px 1px;
-	
+		
+		$ship_img_url: url('../img/PPCA_ship.svg');
+		$fire_img_url: url('../img/flame.svg');
+		$miss_img_url: url('../img/water-splash.svg');
+			
 		a.button 
 		{
 			width: $board_cell_width - 2px;
@@ -38,27 +45,36 @@ $board_height: $board_cell_height * 11;// + 10;
 			margin: 0px;// 1px 1px 0px;
 			padding: 0px;
 			background-color: white;
-			background-size: contain;
+			background-size: $board_cell_width $board_cell_width;
+			
+			&:hover {
+				background-image: $ship_img_url;
+				opacity: 0.5;
+			}
 			
 			&.miss {
-				background-image: url('../img/fire-bomb.svg');
+				background-image: $miss_img_url;
+				background-color: blue;
+				
+				&:hover { }
 			}
 		
 			&.fire {
-				background-image: url('../img/flame.svg');
+				background-image: $fire_img_url;
+				//background-color: blue;
+				
+				&:hover { }
 			}
 			
 			&.ship {
-				background-image: url('../img/ship.svg');
+				background-image: $ship_img_url;
 				background-color: red;
 								
 				&.validated {
-					background-color: green;
+					background-color: #00CA00;
 				}
-			}
-			
-			&:hover {
-				background-image: url('../img/ship.svg');
+				
+				&:hover { }
 			}
 			
 			&.caption 
@@ -70,12 +86,19 @@ $board_height: $board_cell_height * 11;// + 10;
 				background-color: #CECECE;
 				text-align: center;
 				font-size: $board_cell_height - 10px;
+				line-height: $board_cell_height;
 			}
+		}
+		
+		&.ready a.button:hover { 
+			background-image: none;
 		}
 	}
 	
-	&.fires a.button:hover {
+	&.enemy a.button:hover {
+		//background-image: none;
 		background-image: url('../img/cannon-shot.svg');
+		opacity: 0.8;
 	}
 }
 
@@ -86,6 +109,7 @@ $board_height: $board_cell_height * 11;// + 10;
  
 .ships.buttons
 {
+	width: $board_width;
 	height: 50px;
 }
 
@@ -110,12 +134,32 @@ $board_height: $board_cell_height * 11;// + 10;
 	}
 }
 
+/**
+ * Hide/show DOM elements
+ *
+ */
 
+*.hide {
+	display: none;
+	visibility: hidden;
+}
 
+*.show {
+	display: block;
+	visibility: visible;
+}
 
+/**
+ * Battle Scene
+ *
+ */
 
-
-
+.player, 
+.enemy {
+	width: $board_width;
+	float: left;
+	padding: 2px;
+}
 
 
 
