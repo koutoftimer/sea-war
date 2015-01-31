@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * Person with person game mode model
  *
@@ -15,11 +16,19 @@ Game.PVPLocalModeModel = function (id1, id2) {
 			'BattleScene',
 			'StartScene'
 		],
+=======
+Game.StateModel = function (id1, id2) {
+	var events = [
+			'activePlayerChanged'
+		],
+		eventManager = new Game.EventManager(events)
+>>>>>>> 3da6243cb4f882c14a4e7c6ed06352e3ff646f60
 		playersID = [
 			id1 || 0, 
 			id2 || 1
 		],
 		activePlayerIndex = 0,
+<<<<<<< HEAD
 		toggleActivePlayer = function () {
 			activePlayerIndex = (activePlayerIndex + 1) % 2;
 			eventManager.notifyObservers('activePlayerChanged');
@@ -45,22 +54,34 @@ Game.PVPLocalModeModel = function (id1, id2) {
 				eventManager.notifyObservers('sceneChanded', sceneOrder[activeSceneIndex]);
 			}
 			//else throw new Error('unknown id ' + id);
+=======
+		getPlayersID = function () {
+			return playerID;
 		},
-		nextScene = function () {
-			activeSceneIndex++;
-			eventManager.notifyObservers('sceneChanded', sceneOrder[activeSceneIndex]);
-		}
+		getActivePlayerIndex = function () {
+			return activePlayerIndex;
+		},
+		setActivePlayerIndex = function (index) {
+			activePlayerIndex = index;
+			eventManager.notifyObservers('activePlayerChanged', index);
+>>>>>>> 3da6243cb4f882c14a4e7c6ed06352e3ff646f60
+		};
 		
 	return {
 		addObserver: eventManager.addObserver,
 		removeObserver: eventManager.removeObserver,
+<<<<<<< HEAD
 		getActiveScene: function () { return sceneOrder[activeSceneIndex]; },
 		getPlayersID: function () { return playersID; },
 		getActivePlayerID: function () { return playersID[activePlayerIndex]; },
 		getBoard: getBoard,
 		setBoard: setBoard,
-		toggleActivePlayer: toggleActivePlayer,
-		nextScene: nextScene
+		toggleActivePlayer: toggleActivePlayer
+=======
+		getPlayersID: getPlayersID,
+		getActivePlayerIndex: getActivePlayerIndex,
+		setActivePlayerIndex: setActivePlayerIndex
+>>>>>>> 3da6243cb4f882c14a4e7c6ed06352e3ff646f60
 	}
 };
 
@@ -142,8 +163,32 @@ Game.Ship = function (number, size, hasShip, hasValidShip) {
  * Ship board model
  */
  
+<<<<<<< HEAD
 Game.BoardModel = function () {
 	var board = [
+=======
+Game.ShipBoardModel = function (playerID) {
+	var events = [
+			'updated'
+		],
+		eventManager = new Game.EventManager(events),
+		// '.' means empty
+		// 's' means invalidated deck site
+		// 'S' means validated deck site
+			/*board = [
+				'sss.s.ssss'.split(''),
+				'..........'.split(''),
+				'ss.s.s.sss'.split(''),
+				'..........'.split(''),
+				'ss.ss.s...'.split(''),
+				'..........'.split(''),
+				'..........'.split(''),
+				'..........'.split(''),
+				'..........'.split(''),
+				'..........'.split('')
+			],*/
+		board = [
+>>>>>>> 3da6243cb4f882c14a4e7c6ed06352e3ff646f60
 			'..........'.split(''),
 			'..........'.split(''),
 			'..........'.split(''),
@@ -155,6 +200,7 @@ Game.BoardModel = function () {
 			'..........'.split(''),
 			'..........'.split('')
 		],
+<<<<<<< HEAD
 		cell = {
 			empty: '.',
 			invalidShip: 's',
@@ -190,19 +236,29 @@ Game.PlayerBoardModel = function (playerID) {
 			'updated'
 		],
 		eventManager = new Game.EventManager(events),
+=======
+		getPlayerID = function () {
+			return playerID;
+		},
+>>>>>>> 3da6243cb4f882c14a4e7c6ed06352e3ff646f60
 		hasShip = function (i, j) {
 			if (i < 0 || i > 9 || j < 0 || j > 9)
 			{
 				return false;
 			}
+<<<<<<< HEAD
 			return (board.board[i][j] == board.cell.validShip) 
 				|| (board.board[i][j] == board.cell.invalidShip);
+=======
+			return board[i][j] == 's' || board[i][j] == 'S';
+>>>>>>> 3da6243cb4f882c14a4e7c6ed06352e3ff646f60
 		},
 		hasValidShip = function (i, j) {
 			if (i < 0 || i > 9 || j < 0 || j > 9)
 			{
 				return false;
 			}
+<<<<<<< HEAD
 			return board.board[i][j] == board.cell.validShip;
 		},
 		invalidateAll = function () {
@@ -212,18 +268,42 @@ Game.PlayerBoardModel = function (playerID) {
 						board.board[i][j] = board.cell.invalidShip;
 		},
 		errors = [new Error('Board is empty.')],
+=======
+			return board[i][j] == 'S';
+		},
+>>>>>>> 3da6243cb4f882c14a4e7c6ed06352e3ff646f60
 		shipPatterns = [
 			new Game.Ship(1, 4, hasShip, hasValidShip), 
 			new Game.Ship(2, 3, hasShip, hasValidShip), 
 			new Game.Ship(3, 2, hasShip, hasValidShip), 
 			new Game.Ship(4, 1, hasShip, hasValidShip)
 		],
+<<<<<<< HEAD
+=======
+		invalidateAll = function () {
+			for (var i = 0, n = 10; i < n; ++i)
+				for (var j = 0; j < n; ++j) 
+					if (hasValidShip(i, j))
+						board[i][j] = 's';
+		},
+		errors = [new Error('Board is empty.')],
+		getErrors = function () {
+			return errors;
+		},
+		hasErrors = function () {
+			return errors.length != 0;
+		},
+>>>>>>> 3da6243cb4f882c14a4e7c6ed06352e3ff646f60
 		validate = function () {
 			invalidateAll();
 			
 			var matchedShips = new Array(shipPatterns.length);
 			
+<<<<<<< HEAD
 			//console.log('matchedShips', matchedShips);
+=======
+			console.log('matchedShips', matchedShips);
+>>>>>>> 3da6243cb4f882c14a4e7c6ed06352e3ff646f60
 			
 			for (var i = 0, n = 10; i < n; ++i)
 				for (var j = 0; j < n; ++j)
@@ -240,12 +320,20 @@ Game.PlayerBoardModel = function (playerID) {
 						if (horizontal) 
 						{
 							for (var h = j; h < j + shipPatterns[k].getSize(); ++h)
+<<<<<<< HEAD
 								board.board[i][h] = board.cell.validShip;
+=======
+								board[i][h] = 'S';
+>>>>>>> 3da6243cb4f882c14a4e7c6ed06352e3ff646f60
 						} 
 						else if (vertical) 
 						{
 							for (var v = i; v < i + shipPatterns[k].getSize(); ++v)
+<<<<<<< HEAD
 								board.board[v][j] = board.cell.validShip;
+=======
+								board[v][j] = 'S';
+>>>>>>> 3da6243cb4f882c14a4e7c6ed06352e3ff646f60
 						}
 					}
 			
@@ -260,6 +348,7 @@ Game.PlayerBoardModel = function (playerID) {
 						+ '. Must be: ' + shipPatterns[i].getNumber() + ', there are: '
 						+ matchedShips[i]));
 						
+<<<<<<< HEAD
 			if (board.hasInvalidShips())
 				errors.push(new Error('Has invalid ships'));
 			
@@ -273,11 +362,20 @@ Game.PlayerBoardModel = function (playerID) {
 		setReady = function (value) {
 			ready = value;
 			eventManager.notifyObservers('updated');
+=======
+			return errors;
+		},
+		setShip = function (i, j, value) {
+			board[i][j] = value ? 's' : '.';
+			validate();
+			eventManager.notifyObservers('updated');
+>>>>>>> 3da6243cb4f882c14a4e7c6ed06352e3ff646f60
 		}
 	
 	return {
 		addObserver: eventManager.addObserver,
 		removeObserver: eventManager.removeObserver,
+<<<<<<< HEAD
 		getPlayerID: function () { return playerID; },
 		getErrors: function () { return errors; },
 		hasErrors: function () { return errors.length != 0; },
@@ -300,7 +398,84 @@ Game.EnemyBoardModel = function (playerID) {
 		shipsBoard = new Game.PlayerBoardModel(playerID),
 		ready = false;
 		
-	shipsBoard.board = Game().gameMode.getBoard(playerID);
+	shipsBoard.board = 
+	[
+				'SSS.S.SSSS'.split(''),
+				'..........'.split(''),
+				'SS.S.S.SSS'.split(''),
+				'..........'.split(''),
+				'SS.SS.S...'.split(''),
+=======
+		getPlayerID: getPlayerID,
+		hasShip: hasShip,
+		hasValidShip: hasValidShip,
+		getErrors: getErrors,
+		hasErrors: hasErrors,
+		validate: validate,
+		setShip: setShip
+	};
+};
+
+/**
+ * Fires board model
+ */
+
+Game.FiresBoardModel = function () {
+	var events = [
+			'fired'
+		],
+		eventManager = new Game.EventManager(events),
+		// '.' means empty
+		// 'f' means ship in fire
+		// 'm' means miss
+		fires = [
+			'..........'.split(''),
+			'..........'.split(''),
+			'..........'.split(''),
+			'..........'.split(''),
+			'..........'.split(''),
+			'..........'.split(''),
+			'..........'.split(''),
+			'..........'.split(''),
+			'..........'.split(''),
+			'..........'.split('')
+		],
+		getFire = function (i, j) {
+			return fires[i][j];
+		},
+		setFire = function (i, j, value) {
+			fires[i][j] = value;
+			eventManager.notifyObservers('fired', {i: i, j: j, value: value});
+		};
+};
+
+
+Game.ModelClassic = function () {
+	var events = 
+		[
+			'myBoardChanged',
+			'enemyBoardChanged',
+			'activePlayerChanged'
+		],
+		eventManager = new Game.EventManager(events);
+
+	var board = {
+			playersID: [0, 1],
+			activePlayer: 0, // 0 - I, 1 - enemy
+			my: [
+				'..........'.split(''),
+				'..........'.split(''),
+				'..........'.split(''),
+				'..........'.split(''),
+				'..........'.split(''),
+>>>>>>> 3da6243cb4f882c14a4e7c6ed06352e3ff646f60
+				'..........'.split(''),
+				'..........'.split(''),
+				'..........'.split(''),
+				'..........'.split(''),
+				'..........'.split('')
+<<<<<<< HEAD
+	];
 	
 	var events = [
 			'updated'
@@ -318,13 +493,6 @@ Game.EnemyBoardModel = function (playerID) {
 			}
 			eventManager.notifyObservers('updated');
 		},
-		isWinner = function () {
-			var res = 0; 
-			for (var i = 0, n = 10; i < n; ++i)
-				for (var j = 0; j < n; ++j)
-					res += firesBoard.board[i][j] == firesBoard.cell.fire;
-			return res == 20; // 4 + 3*2 + 2*3 + 4 = 2 * (4+3+3) = 2*10 = 20
-		}
 		setReady = function (value) {
 			ready = value;
 			eventManager.notifyObservers('updated');
@@ -340,8 +508,52 @@ Game.EnemyBoardModel = function (playerID) {
 		getReady: function () { return ready; },
 		fire: fire,
 		getReady: function () { return ready; },
-		setReady: setReady,
-		isWinner: isWinner
+		setReady: setReady
 	};
 }
+=======
+			],
+			enemy: [
+				'sss.......'.split(''),
+				'..........'.split(''),
+				'..........'.split(''),
+				'..........'.split(''),
+				'..........'.split(''),
+				'..........'.split(''),
+				'..........'.split(''),
+				'..........'.split(''),
+				'..........'.split(''),
+				'..........'.split('')
+			],
+			setEnemy: function (i, j, value) {
+				var enemy = activePlayer ? board.enemy : board.my;
+				enemy[i][j] = value;
+				eventManager.notifyObservers('enemyBoardChanged', enemy);
+				changeActivePlayer();
+			},
+			changeActivePlayer: function () {
+				board.activePlayer = 1 ^ board.activePlayer;
+				eventManager.notifyObservers('activePlayerChanged');
+			},
+			init: function () {
+				eventManager.notifyObservers('activePlayerChanged');
+				eventManager.notifyObservers('enemyBoardChanged', board.enemy);
+				eventManager.notifyObservers('myBoardChanged', board.enemy);
+			}
+		};
+		
+	return {
+		addObserver: eventManager.addObserver,
+		removeObserver: eventManager.removeObserver,
+		init: board.init,
+		getBoardMy: function () {
+			return board.my;
+		},
+		getBoardEnemy: function () {
+			return board.enemy;
+		},
+		setEnemy: board.setEnemy
+	}
+};
+>>>>>>> 3da6243cb4f882c14a4e7c6ed06352e3ff646f60
 
