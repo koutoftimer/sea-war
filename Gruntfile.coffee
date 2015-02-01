@@ -1,6 +1,7 @@
 module.exports = (grunt) ->
 
   grunt.initConfig
+
     coffee:
       compile:
         files: [
@@ -11,6 +12,41 @@ module.exports = (grunt) ->
           ext: '.js'
         ]
 
-  grunt.loadNpmTasks('grunt-contrib-coffee');
+    sass:
+      compile:
+        files: [
+          expand: yes
+          cwd: 'src/sass/'
+          src: ['**/*.scss', '**/*.sass']
+          dest: 'dist/css/'
+          ext: '.css'
+        ]
 
-  grunt.registerTask('build', ['coffee']);
+    copy:
+      html:
+        files: [
+          expand: yes
+          cwd: 'src/'
+          src: ['**/*.html']
+          dest: 'dist/'
+        ]
+      img:
+        files: [
+          expand: yes
+          cwd: 'src/img/'
+          src: ['*']
+          dest: 'dist/img/'
+        ]
+      sounds:
+        files: [
+          expand: yes
+          cwd: 'src/sounds/'
+          src: ['*']
+          dest: 'dist/sounds/'
+        ]
+
+  grunt.loadNpmTasks 'grunt-contrib-coffee'
+  grunt.loadNpmTasks 'grunt-contrib-copy'
+  grunt.loadNpmTasks 'grunt-contrib-sass'
+
+  grunt.registerTask 'build', ['coffee', 'sass', 'copy']
