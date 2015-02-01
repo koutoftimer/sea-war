@@ -1,0 +1,23 @@
+{
+  "name": "sea-war",
+  "version": "1.0.0",
+  "description": "Classic sea war game",
+  "main": "index.js",
+  "dependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-coffee": "^0.12.0",
+    "grunt-contrib-copy": "^0.7.0",
+    "grunt-contrib-sass": "^0.8.1"
+  },
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/koutoftimer/sea-war.git"
+  },
+  "author": "Ruslan Kovtun",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/koutoftimer/sea-war/issues"
+  },
+  "homepage": "https://github.com/koutoftimer/sea-war"
+}
